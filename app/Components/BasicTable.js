@@ -8,6 +8,7 @@ const BasicTable = () => {
   const columns = useMemo(() => COLUMNS, []);
   const data = useMemo(() => MOCK_DATA, []);
   const [filterInput, setFilterInput] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState("all_columns");
   const tableInstance = useTable(
     {
       columns,
@@ -33,14 +34,39 @@ const BasicTable = () => {
     canPreviousPage,
   } = tableInstance;
 
+  // const handleFilterChange = (e) => {
+  //   const value = e.target.value || "";
+  //   setFilter("first_name", value);
+  //   setFilterInput(value);
+  // };
   const handleFilterChange = (e) => {
     const value = e.target.value || "";
-    setFilter("first_name", value);
+    if (selectedFilter === "all_columns") {
+      // If "All Columns" is selected, filter data in all columns
+      setFilter("first_name", value);
+      setFilter("last_name", value);
+      setFilter("country", value);
+      setFilter("Phone", value);
+    } else {
+      // Filter data in the selected column
+      setFilter(selectedFilter, value);
+    }
     setFilterInput(value);
   };
   return (
     <div>
       <div className="flex justify-end gap-5 w-full px-8 ">
+        <select
+          className="relative text-gray-600 py-2 px-6"
+          value={selectedFilter}
+          onChange={(e) => setSelectedFilter(e.target.value)}
+        >
+          <option value="all_columns">All Columns</option>
+          <option value="country">Country</option>
+          <option value="first_name">First Name</option>
+          <option value="last_name">Last Name</option>
+          <option value="Phone">Phone</option>
+        </select>
         <input
           className="relative text-gray-600 py-2 px-6"
           type="text"
@@ -51,22 +77,26 @@ const BasicTable = () => {
       </div>
       <table className="mt-8" {...getTableProps()}>
         <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+          {headerGroups.map((headerGroup, index) => (
+            <tr key={index} {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column, index) => (
+                <th key={index} {...column.getHeaderProps()}>
+                  {column.render("Header")}
+                </th>
               ))}
             </tr>
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {page.map((row) => {
+          {page.map((row, index) => {
             prepareRow(row);
             return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => {
+              <tr key={index} {...row.getRowProps()}>
+                {row.cells.map((cell, index) => {
                   return (
-                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                    <td key={index} {...cell.getCellProps()}>
+                      {cell.render("Cell")}
+                    </td>
                   );
                 })}
               </tr>
