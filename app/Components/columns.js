@@ -26,6 +26,6 @@ export const COLUMNS = [
   {
     Header: "Phone",
     accessor: "Phone",
-    id: "Phone",
+    id: "P  hone",
   },
 ];
